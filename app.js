@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var http = require('http');
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -12,7 +14,8 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('view engine', 'html');
+app.engine('html', require('ejs').__express);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -56,5 +59,13 @@ app.use(function(err, req, res, next) {
   });
 });
 
+var port = process.env.PORT | '3000';
+var server = app.listen(port);//监听端口
+var io = require('socket.io')(server);
 
-module.exports = app;
+var messages = [];
+//监听 客户端的连接事件
+//socket代表与某个客户端的连接对象
+io.sockets.on('connection', function(socket){
+
+});
