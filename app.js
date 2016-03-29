@@ -60,12 +60,22 @@ app.use(function(err, req, res, next) {
 });
 
 var port = process.env.PORT | '3000';
-var server = app.listen(port);//监听端口
+var server = app.listen(port, function(){
+  console.log('Listening on ' + port);
+});//监听端口
 var io = require('socket.io')(server);
 
 var messages = [];
 //监听 客户端的连接事件
 //socket代表与某个客户端的连接对象
 io.sockets.on('connection', function(socket){
-
+  console.log('A user connected');
+  socket.on('getAllMessages', function(){
+    socket.emit('allMessages', messages);
+  });
+  socket.on('createMessage', function(msg){
+    console.log('*******', msg);
+    messages.push(msg);
+    io.socket.emit('messageAdded', msg);
+  })
 });
