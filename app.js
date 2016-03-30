@@ -5,10 +5,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var http = require('http');
-
+var mongoose = require('mongoose');
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var settings = require('./settings');
 
 var app = express();
 
@@ -17,12 +20,29 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.engine('html', require('ejs').__express);
 
+var db = mongoose.connect(settings.url);
+db.connection.on('error', function(error){
+	console.log('Connect database failed: ' + error);
+});
+db.connection.on('success', function(){
+	console.log("Connect database successfully!");
+})
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+	secret: settings.cookieSecret,//secret 用来防止篡改 cookie
+	key: settings.db,//key 的值为 cookie 的名字
+	cookie: {maxAge: 1000*60*60*24*30},
+	resave: true,
+	saveUninitialized: true,
+	//指定保存的位置
+	store: new MongoStore({mongooseConnection: mongoose.connection})
+}));
 app.use(express.static(path.join(__dirname, 'src')));
 
 app.use('/', routes);

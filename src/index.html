@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="chatModule">
 <head>
-	<title><%= title %></title>
+	<title>Chat room</title>
 	<meta charset="utf-8"/>
 	<meta name="viewport"
 		  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
@@ -13,6 +13,16 @@
 		<div class="navbar-header">
 			<a class="navbar-brand" href="#">ChatRoom</a>
 		</div>
+		<nav class="collapse navbar-collapse" role="navigation">
+			<ul class="nav navbar-nav navbar-right" ng-show="curUser">
+				<li>
+					<img ng-src="{{curUser.avatar}}" title="{{curUser.username}}" class="img-rounded"/>
+				</li>
+				<li>
+					<a href="" ng-click="logout()">Log out</a>
+				</li>
+			</ul>
+		</nav>
 	</div>
 </div>
 //view
