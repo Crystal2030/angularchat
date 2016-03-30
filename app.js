@@ -76,6 +76,6 @@ io.sockets.on('connection', function(socket){
   socket.on('createMessage', function(msg){
     console.log('*******', msg);
     messages.push(msg);
-    io.socket.emit('messageAdded', msg);
+    io.sockets.emit('messageAdded', msg);
   })
 });

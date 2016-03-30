@@ -19,7 +19,7 @@ angular.module('chatModule').factory('socket', function($rootScope){
             });
         },
         emit: function(eventName, data, callback){
-            socket.on(eventName, data, function(){
+            socket.emit(eventName, data, function(){
                 var args = arguments;
                 $rootScope.$apply(function(){
                     if(callback){
@@ -33,15 +33,14 @@ angular.module('chatModule').factory('socket', function($rootScope){
 
 
 angular.module('chatModule').controller('RoomController', function($scope, socket){
-    $scope.messages = [];
-    socket.emit('getAllMessages');
-    socket.on('allMessages', function(messages){
-        $scope.messages = messages;
-    });
-    socket.on('messageAdded', function(message){
-        $scope.messages.push(message);
-        console.log('messageAdded', messages);
-    });
+    $scope.messages = []
+    socket.emit('getAllMessages')
+    socket.on('allMessage', function (messages) {
+        $scope.messages = messages
+    })
+    socket.on('messageAdded', function (message) {
+        $scope.messages.push(message)
+    })
 });
 
 angular.module('chatModule').controller('MessageCreatorController', function($scope, socket){
@@ -51,7 +50,6 @@ angular.module('chatModule').controller('MessageCreatorController', function($sc
             return;
         }
         socket.emit('createMessage', $scope.newMessage);
-        console.log($scope.newMessage);
         $scope.newMessage = '';
     }
 });
