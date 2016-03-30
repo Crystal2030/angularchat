@@ -23,7 +23,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'src')));
 
 app.use('/', routes);
 app.use('/users', users);
@@ -74,7 +74,6 @@ io.sockets.on('connection', function(socket){
     socket.emit('allMessages', messages);
   });
   socket.on('createMessage', function(msg){
-    console.log('*******', msg);
     messages.push(msg);
     io.sockets.emit('messageAdded', msg);
   })
