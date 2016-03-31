@@ -2,8 +2,6 @@
  * Created by crystal on 3/30/16.
  */
 angular.module('chatModule').directive('ctrlEnterBreakLine', function(){
-    console.log('111111')
-
     return function(scope, element, attrs){
         var flag = false;
         element.bind('keydown', function(event){

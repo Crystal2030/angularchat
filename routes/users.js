@@ -7,18 +7,19 @@ var md5 = require('../utils/md5');
 /* GET users listing. */
 router.get('/validate', function(req, res) {
 	var userId = req.session.userId;
-	User.findById(userId, function(err, user){
-		//check where the user login or not
-		if(userId){
+	console.log(userId);
+	if(userId){
+		User.findById(userId, function(err, user){
+			//check where the user login or not
 			if(err){
 				res.json(401, {msg: err});
 			}else{
 				res.json(user);
 			}
-		}else{
-			res.json(401, null);
-		}
-	})
+		})
+	}else{
+		res.json(401, null);
+	}
 });
 
 //regsiter

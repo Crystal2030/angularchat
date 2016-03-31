@@ -1,11 +1,11 @@
 /**
- * Created by ziwen.xu on 2016/3/30.
+ * Created by Crystal on 2016/3/30.
  */
 var userModel = require("../models/user");
 var gravatar = require('gravatar')
 
 
-exports.findById = function(userId, callback){
+exports.findUserById = function(userId, callback){
 	userModel.findById({_id: userId}, callback);
 };
 
@@ -18,7 +18,7 @@ exports.reg = function(email, callback){
 			doc = new userModel;
 			doc.username = email.split('@')[0];
 			doc.email = email;
-			user.avatarUrl = gravatar.url(email);
+			doc.avatar = gravatar.url(email);
 			doc.save(callback);
 		}
 	})

@@ -8,6 +8,7 @@ var http = require('http');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
+var signedCookieParser = cookieParser('angularchat');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -34,6 +35,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+var sessionStore = new MongoStore({mongooseConnection: mongoose.connection});
 app.use(session({
 	secret: settings.cookieSecret,//secret 用来防止篡改 cookie
 	key: settings.db,//key 的值为 cookie 的名字
@@ -41,7 +43,7 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true,
 	//指定保存的位置
-	store: new MongoStore({mongooseConnection: mongoose.connection})
+	store: sessionStore
 }));
 app.use(express.static(path.join(__dirname, 'src')));
 
@@ -54,6 +56,7 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
 
 // error handlers
 
@@ -84,6 +87,24 @@ var server = app.listen(port, function(){
   console.log('Listening on ' + port);
 });//监听端口
 var io = require('socket.io')(server);
+
+io.set('authorization', function(request, next) {
+  signedCookieParser(request,{},function(err){//解密cookie
+    sessionStore.get(request.signedCookies['connect.sid'],function(err,session){//从session中获取会话信息
+      if (err) {
+        next(err.message, false)
+      } else {
+        if (session && session.userId) {
+          request.session = session;
+          next(null, true)
+        } else {
+          next('No login')
+        }
+      }
+    });
+  });
+});
+
 
 var messages = [];
 //监听 客户端的连接事件
