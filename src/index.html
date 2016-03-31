@@ -13,7 +13,7 @@
 		<div class="navbar-header">
 			<a class="navbar-brand" href="#">ChatRoom</a>
 		</div>
-        <nav class="collapse navbar-collapse" role="navigation">
+        <nav class="collapse navbar-collapse" role="navigation" ng-controller="NavController">
             <ul class="nav navbar-nav navbar-right" ng-show="me">
                 <li>
                     <img ng-src="{{me.avatarUrl}}" title="{{me.name}}" class="img-rounded"/>
@@ -42,6 +42,7 @@
 <script src="/controllers/messageCreatorCtrl.js"></script>
 <script src="/controllers/roomCtrl.js"></script>
 <script src="/controllers/loginCtrl.js"></script>
+<script src="/controllers/navCtrl.js"></script>
 <script src="/services/socket.js"></script>
 <script src="/services/validator.js"></script>
 <script src="/directives/ctrlEnterBreakLine.js"></script>
