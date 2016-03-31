@@ -8,7 +8,7 @@ var md5 = require('../utils/md5');
 router.get('/validate', function(req, res) {
 	var userId = req.session.userId;
 	if(userId){
-		User.findById(userId, function(err, user){
+		User.findUserById(userId, function(err, user){
 			//check where the user login or not
 			if(err){
 				res.json(401, {msg: err});
