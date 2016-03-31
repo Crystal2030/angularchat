@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var signedCookieParser = cookieParser('angularchat');
+var User = require('./controllers/user');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -88,35 +89,65 @@ var server = app.listen(port, function(){
 });//监听端口
 var io = require('socket.io')(server);
 
-/*io.set('authorization', function(request, next) {
-  signedCookieParser(request,{},function(err){//解密cookie
-    sessionStore.get(request.signedCookies['connect.sid'],function(err,session){//从session中获取会话信息
-      if (err) {
-        next(err.message, false)
-      } else {
-        if (session && session.userId) {
-          request.session = session;
-          next(null, true)
-        } else {
-          next('No login')
-        }
-      }
-    });
-  });
-});*/
+io.set('authorization', function(request, next) {
+	signedCookieParser(request,{},function(err){
+		sessionStore.get(request.signedCookies['connect.sid'],function(err,session){
+			if (err) {
+				next(err.message, false)
+			} else {
+				if (session && session.userId) {
+					request.session = session;
+					next(null, true)
+				} else {
+					next('No login')
+				}
+			}
+		});
+	});
+});
 
+var SYSTEM = {
+	name: 'System',
+	avatarUrl: 'https://secure.gravatar.com/avatar/50d11d6a57cfd40e0878c8ac307f3e01?s=48'
+}
 
 var messages = [];
+var ObjectId = require('mongoose').Schema.ObjectId;
 //监听 客户端的连接事件
 //socket代表与某个客户端的连接对象
 io.sockets.on('connection', function(socket){
-  console.log('A user connected');
-  socket.on('getAllMessages', function(){
-    socket.emit('allMessages', messages);
-  });
-  socket.on('createMessage', function(msg){
-    console.log('**********createMessage**********',msg);
-    messages.push(msg);
-    io.sockets.emit('messageAdded', msg);
-  })
+	var userId = socket.request.session.userId;
+	var currentUser ;
+	User.findUserById(userId, function(err,user){
+		if(err){
+			currentUser = {username:'匿名'};
+		}else{
+			currentUser = user;
+			//增加一条消息
+			socket.broadcast.emit('message.add', {
+				content: currentUser.username + '进入了聊天室',
+				creator: SYSTEM,
+				createAt: new Date(),
+				_id: ObjectId()
+			})
+			socket.on('disconnect', function () {
+				//给别人增加一条消息
+				socket.broadcast.emit('message.add', {
+					content: currentUser.username + '离开了聊天室',
+					creator: SYSTEM,
+					createAt: new Date(),
+					_id: ObjectId()
+				});
+			});
+			socket.emit('connected');
+		}
+	});
+	  socket.on('getAllMessages', function(){
+	    socket.emit('allMessages', messages);
+	  });
+	  socket.on('createMessage', function(msg){
+	    console.log('**********createMessage**********',msg);
+	    messages.push(msg);
+	    io.sockets.emit('messageAdded', msg);
+	  })
 });

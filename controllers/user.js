@@ -2,7 +2,8 @@
  * Created by Crystal on 2016/3/30.
  */
 var userModel = require("../models/user");
-var gravatar = require('gravatar')
+var gravatar = require('gravatar');
+var crypto = require('../utils/md5');
 
 
 exports.findUserById = function(userId, callback){
@@ -23,3 +24,14 @@ exports.reg = function(email, callback){
 		}
 	})
 }
+
+//login
+exports.login = function(user,cb){
+	userModel.findOne({username:user.username,password:crypto.md5(user.password)},function(err,findUser){
+		if(err)
+			cb(err);
+		else{
+			cb(null,findUser);
+		}
+	});
+};
