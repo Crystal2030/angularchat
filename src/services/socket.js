@@ -2,7 +2,7 @@
  * Created by crystal on 3/30/16.
  */
 angular.module('chatModule').factory('socket', function($rootScope){
-    var socket = io.connect('/');
+    var socket = io.connect('http://'+window.location.host);
     /*socket.on('connect', function () {
      console.log('Connected to angularchat');
      }); */
@@ -18,6 +18,7 @@ angular.module('chatModule').factory('socket', function($rootScope){
         },
         emit: function(eventName, data, callback){
             socket.emit(eventName, data, function(){
+                console.log('+++++++++',arguments);
                 var args = arguments;
                 $rootScope.$apply(function(){
                     if(callback){

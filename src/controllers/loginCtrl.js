@@ -16,17 +16,4 @@ angular.module('chatModule').controller('LoginController', function($scope, $htt
 			$location.path('/login')
 		})
 	}
-
-	$scope.logout = function(){
-		console.log('logout');
-		$http({
-			url:'/users/logout',
-			method: 'GET'
-		}).success(function(user){
-			$scope.$emit('logout');
-			$location.path('/login');
-		}).error(function(){
-			$location.path('/login');
-		})
-	}
 });

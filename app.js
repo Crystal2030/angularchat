@@ -115,6 +115,7 @@ io.sockets.on('connection', function(socket){
     socket.emit('allMessages', messages);
   });
   socket.on('createMessage', function(msg){
+    console.log('**********createMessage**********',msg);
     messages.push(msg);
     io.sockets.emit('messageAdded', msg);
   })
