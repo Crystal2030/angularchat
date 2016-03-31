@@ -6,6 +6,7 @@
 	<meta name="viewport"
 		  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
 	<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css"/>
+	<link rel="stylesheet" href="/styles/index.css"/>
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top">
@@ -16,7 +17,7 @@
         <nav class="collapse navbar-collapse" role="navigation" ng-controller="NavController">
             <ul class="nav navbar-nav navbar-right" ng-show="me">
                 <li>
-                    <img ng-src="{{me.avatarUrl}}" title="{{me.name}}" class="img-rounded"/>
+                    <img class="avatar"  ng-src="{{me.avatar}}" title="{{me.username}}"/>
                 </li>
                 <li>
                     <a href="" ng-click="logout()">{{me.username}}&nbsp;&nbsp;<span>Log out</span></a>

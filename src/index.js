@@ -4,7 +4,7 @@
 angular.module('chatModule', ['ngRoute'])
     .config(function($routeProvider){
         $routeProvider.
-            when('/',{
+            when('/room',{
                 templateUrl: '/templates/room.tpl.html',
                 controller: 'RoomController'
             }).
@@ -13,14 +13,14 @@ angular.module('chatModule', ['ngRoute'])
 		        controller: 'LoginController'
 	        }).
             otherwise({
-                redirectTo: '/'
+                redirectTo: '/room'
             })
     }).
 	run(function($rootScope, $http, $location, validator){
 		//validate user
-		validator.then(function(user){
+		validator.then(function(user) {//  成功
 			$location.path('/');
-		},function(reason) {//失败
+		}, function(data) {//失败
 			$location.path('/login');
 		});
 

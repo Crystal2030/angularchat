@@ -40,7 +40,7 @@ router.post('/login', function(req, res){
 
 router.get('/logout', function(req, res){
 	req.session.userId = null;
-	res.json(null);
+	res.json({msg:'success'});
 })
 
 module.exports = router;

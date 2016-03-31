@@ -88,7 +88,7 @@ var server = app.listen(port, function(){
 });//监听端口
 var io = require('socket.io')(server);
 
-io.set('authorization', function(request, next) {
+/*io.set('authorization', function(request, next) {
   signedCookieParser(request,{},function(err){//解密cookie
     sessionStore.get(request.signedCookies['connect.sid'],function(err,session){//从session中获取会话信息
       if (err) {
@@ -103,7 +103,7 @@ io.set('authorization', function(request, next) {
       }
     });
   });
-});
+});*/
 
 
 var messages = [];

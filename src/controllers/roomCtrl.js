@@ -8,7 +8,6 @@ angular.module('chatModule').controller('RoomController', function($scope, socke
         $scope.messages = messages
     })
     socket.on('messageAdded', function (message) {
-        console.log('*****************');
         $scope.messages.push(message)
     })
 });

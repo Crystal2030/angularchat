@@ -4,13 +4,13 @@
         <div class="panel-body">
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="message in messages">
-                    {{me.username}}: {{message}}
+	                <img class="avatar"  ng-src="{{me.avatar}}" title="{{me.username}}"/>
+                    {{message.creator.username}}: {{message.content}}
                 </li>
             </ul>
         </div>
         <div class="panel-footer">
             <form class="row" ng-controller="MessageCreatorController">
-                {{newMessage}}
                 <textarea ng-model="newMessage" ctrl-enter-break-line="createMessage()" placeholder= "Ctrl+Enter to send your message"  class="form-control" cols="30" rows="10"></textarea>
             </form>
         </div>
