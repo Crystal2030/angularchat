@@ -3,12 +3,12 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var signedCookieParser = cookieParser('angularchat');
 var bodyParser = require('body-parser');
 var http = require('http');
 var mongoose = require('mongoose');
-var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var signedCookieParser = cookieParser('angularchat');
+var expressSession = require('express-session');
+var MongoStore = require('connect-mongo')(expressSession);
 var User = require('./controllers/user');
 var msgModel = require('./controllers/messages');
 var async = require('async');
@@ -34,21 +34,21 @@ db.connection.on('success', function () {
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, 'src')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-var sessionStore = new MongoStore({mongooseConnection: mongoose.connection});
-app.use(session({
+var sessionStore = new MongoStore({
+	url: settings.url
+});
+app.use(expressSession({
     secret: settings.cookieSecret,//secret 用来防止篡改 cookie
-    key: settings.db,//key 的值为 cookie 的名字
-    cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},
-    resave: true,
-    saveUninitialized: true,
+	resave:true,
+	saveUninitialized:false,
     //指定保存的位置
     store: sessionStore
 }));
-app.use(express.static(path.join(__dirname, 'src')));
 
 app.use('/', routes);
 app.use('/users', users);
@@ -89,64 +89,61 @@ var port = process.env.PORT | '3000';
 var server = app.listen(port, function () {
     console.log('Listening on ' + port);
 });//监听端口
+
 var io = require('socket.io')(server);
 
-/*io.set('authorization', function(request, next) {
- signedCookieParser(request,{},function(err){
- sessionStore.get(request.signedCookies['connect.sid'],function(err,session){
- if (err) {
- next(err.message, false)
- } else {
- if (session && session.userId) {
- request.session = session;
- next(null, true)
- } else {
- next('No login')
- }
- }
- });
- });
- });*/
+io.set('authorization', function(handshake, callback) {
+	signedCookieParser(handshake,{},function(err){//解密cookie
+		sessionStore.get(handshake.signedCookies['angularchat'],function(err,session){//从session中获取会话信息
+			if (err) {
+				callback(err.message, false)
+			} else {
+				if (session && session.userId) {
+					handshake.session = session;
+					console.log('0000000000',handshake.session)
+					callback(null, true)
+				} else {
+					callback('Not login')
+				}
+			}
+		});
+	});
+});
 
 var SYSTEM = {
     name: 'System',
     avatarUrl: 'https://secure.gravatar.com/avatar/50d11d6a57cfd40e0878c8ac307f3e01?s=48'
 }
 
-var messages = [];
-var ObjectId = require('mongoose').Schema.ObjectId;
 //监听 客户端的连接事件
 //socket代表与某个客户端的连接对象
 io.sockets.on('connection', function (socket) {
-    /*var userId = socket.request.session.userId;
-     var currentUser ;
-     User.findUserById(userId, function(err,user){
-     if(err){
-     currentUser = {username:'匿名'};
-     }else{
-     currentUser = user;
-     //增加一条消息
-     socket.broadcast.emit('message.add', {
-     content: currentUser.username + '进入了聊天室',
-     creator: SYSTEM,
-     createAt: new Date(),
-     _id: ObjectId()
-     })
-     socket.on('disconnect', function () {
-     //给别人增加一条消息
-     socket.broadcast.emit('message.add', {
-     content: currentUser.username + '离开了聊天室',
-     creator: SYSTEM,
-     createAt: new Date(),
-     _id: ObjectId()
-     });
-     });
-     socket.emit('connected');
-     }
-     });*/
-    /*socket.on('getAllMessages', function(){
-     socket.emit('allMessages', messages);
-     });*/
+	/*console.log('1111111111111',socket.handshake);
+	var userId = '56fe5cc8c96b593c17c4d617';
+	var currentUser ;
+	User.findUserById({_id:userId},function(err,user){
+		if(err){
+			currentUser = {username:'匿名'};
+		}else{
+			currentUser = user;
+			users.push(currentUser);
+			//增加一条消息
+			socket.broadcast.emit('messageAdded', {
+				content: currentUser.username + '进入了聊天室',
+				creator: SYSTEM,
+				createAt: new Date()
+			})
+			socket.on('disconnect', function () {
+				//给别人增加一条消息
+				socket.broadcast.emit('messageAdded', {
+					content: currentUser.username + '离开了聊天室',
+					creator: SYSTEM,
+					createAt: new Date()
+				});
+			});
+			socket.emit('connected');
+		}
+	});*/
     socket.on('getRoom', function () {
 	    //使用async来并行地对数据库进行读取
         async.parallel([
