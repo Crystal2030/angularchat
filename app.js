@@ -89,7 +89,7 @@ var server = app.listen(port, function(){
 });//监听端口
 var io = require('socket.io')(server);
 
-io.set('authorization', function(request, next) {
+/*io.set('authorization', function(request, next) {
 	signedCookieParser(request,{},function(err){
 		sessionStore.get(request.signedCookies['connect.sid'],function(err,session){
 			if (err) {
@@ -104,7 +104,7 @@ io.set('authorization', function(request, next) {
 			}
 		});
 	});
-});
+});*/
 
 var SYSTEM = {
 	name: 'System',
@@ -116,7 +116,7 @@ var ObjectId = require('mongoose').Schema.ObjectId;
 //监听 客户端的连接事件
 //socket代表与某个客户端的连接对象
 io.sockets.on('connection', function(socket){
-	var userId = socket.request.session.userId;
+	/*var userId = socket.request.session.userId;
 	var currentUser ;
 	User.findUserById(userId, function(err,user){
 		if(err){
@@ -141,12 +141,11 @@ io.sockets.on('connection', function(socket){
 			});
 			socket.emit('connected');
 		}
-	});
+	});*/
 	  socket.on('getAllMessages', function(){
 	    socket.emit('allMessages', messages);
 	  });
 	  socket.on('createMessage', function(msg){
-	    console.log('**********createMessage**********',msg);
 	    messages.push(msg);
 	    io.sockets.emit('messageAdded', msg);
 	  })
