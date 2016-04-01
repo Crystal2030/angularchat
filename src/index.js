@@ -1,7 +1,7 @@
 /**
  * Created by crystal on 3/29/16.
  */
-angular.module('chatModule', ['ngRoute'])
+angular.module('chatModule', ['ngRoute', 'angularMoment'])
     .config(function($routeProvider){
         $routeProvider.
             when('/room',{

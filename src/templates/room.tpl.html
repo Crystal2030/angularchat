@@ -3,9 +3,13 @@
         <div class="panel-heading">Chat Room</div>
         <div class="panel-body">
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="message in room.messages track by $index">
-	                <img class="avatar"  ng-src="{{me.avatar}}" title="{{me.username}}"/>
+                <li class="list-group-item col-md-12 msg-list" ng-repeat="message in room.messages track by $index">
+	                <span class="col-md-9">
+		                <img class="avatar"  ng-src="{{me.avatar}}" title="{{me.username}}"/>
                     {{message.creator.username}}: {{message.content}}
+	                </span>
+                    <!-- Use the am-time-ago directive to format your relative timestamps. -->
+                    <time class="col-md-3 time" am-time-ago="message.createAt "></time>
                 </li>
             </ul>
         </div>

@@ -15,7 +15,9 @@ angular.module('chatModule').directive('ctrlEnterBreakLine', function(){
                 if(flag){
                     element.val(element.val() + '\n');
                 }else{
-                    scope.$eval(attrs.ctrlEnterBreakLine);
+                    scope.$apply(function(){
+                        scope.$eval(attrs.ctrlEnterBreakLine);
+                    });
                     event.preventDefault();
                 }
             }

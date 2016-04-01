@@ -10,6 +10,8 @@ var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var signedCookieParser = cookieParser('angularchat');
 var User = require('./controllers/user');
+var msgModel = require('./controllers/messages');
+var async = require('async');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -113,7 +115,6 @@ var SYSTEM = {
 
 var messages = [];
 var ObjectId = require('mongoose').Schema.ObjectId;
-var User = require('./controllers/user');
 //监听 客户端的连接事件
 //socket代表与某个客户端的连接对象
 io.sockets.on('connection', function (socket) {
@@ -147,18 +148,35 @@ io.sockets.on('connection', function (socket) {
      socket.emit('allMessages', messages);
      });*/
     socket.on('getRoom', function () {
-        User.getOnlineUsers(function (err, users) {
-            if (err) {
-                socket.emit('err', {msg: err});
-            } else {
-                socket.emit('roomData', {users: users, messages: messages});
+	    //使用async来并行地对数据库进行读取
+        async.parallel([
+            function(done){
+                User.getOnlineUsers(done);
+            },
+            function(done){
+	            msgModel.read(done);
+            }
+        ],
+        function(err, results){
+            if(err){
+                socket.emit('err',{msg: err});
+            }else{
+                socket.emit('roomData', {
+                    users: results[0],
+                    messages: results[1]
+                })
             }
         })
-    })
-    socket.on('createMessage', function (msg) {
-        messages.push(msg);
-        console.log('messages', messages);
-        io.sockets.emit('messageAdded', msg);
+
+    });
+    socket.on('createMessage', function (message) {
+	    msgModel.create(message, function(err, message){
+	        if(err){
+                socket.emit('err',{msg: err});
+            }else{
+                io.sockets.emit('messageAdded', message);
+            }
+        })
     });
 
 
