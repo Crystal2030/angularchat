@@ -27,7 +27,11 @@ angular.module('chatModule', ['ngRoute'])
 		//当用户通过登录页成功登录后，将用户信息发送给启动模块，更新$rootScope的用户信息；
 		$rootScope.$on('login', function (evt, me) {
 			$rootScope.me = me
-		})
+		});
+
+		$rootScope.$on('logout', function (evt, me) {
+			$rootScope.me = null;
+		});
 
 	});
 

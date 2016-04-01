@@ -7,7 +7,8 @@ var userSchema = new mongoose.Schema({
 	//User data model
 	username:{type:String},
 	email:{type:String},
-	avatar: {type:String}
+	avatar: {type:String},
+	online:{type:Boolean}
 });
 
 var userModel = mongoose.model('user', userSchema);

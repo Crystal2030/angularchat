@@ -35,3 +35,32 @@ exports.login = function(user,cb){
 		}
 	});
 };
+
+//online
+exports.online = function(userId, callback){
+	userModel.findOneAndUpdate({
+		_id: userId
+	},{
+		$set: {
+			online: true
+		}
+	}, callback);
+};
+
+//offline
+exports.offline = function(userId, callback){
+	userModel.findOneAndUpdate({
+		_id: userId
+	},{
+		$set: {
+			online: false
+		}
+	}, callback);
+};
+
+//getOnlineUsers
+exports.getOnlineUsers = function(callback){
+	userModel.find({
+		online: true
+	}, callback);
+}

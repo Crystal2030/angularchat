@@ -30,7 +30,13 @@ router.post('/login', function(req, res){
 				res.json(500, {msg: err});
 			}else{
 				req.session.userId = user._id;
-				res.json(user);
+				User.online(user._id, function(err, user){
+					if(err){
+						res.json(500, {msg: err});
+					}else{
+						res.json(user);
+					}
+				})
 			}
 		})
 	}else{
@@ -39,8 +45,15 @@ router.post('/login', function(req, res){
 });
 
 router.get('/logout', function(req, res){
-	req.session.userId = null;
-	res.json({msg:'success'});
+	var userId = req.session.userId;
+	User.offline(userId, function(err, user){
+		if(err){
+			res.json(500, {msg: err});
+		}else{
+			res.json(200);
+			delete req.session.userId;
+		}
+	})
 })
 
 module.exports = router;
